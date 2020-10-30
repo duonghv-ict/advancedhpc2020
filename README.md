@@ -12,8 +12,8 @@ Students are expected to:
 Student Info
 =======================
 
-* Name: MyName
-* Key:
+* Name: Ha Vien Duong
+* Key:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhXgqejdm5FlA2takvfVIOJk1q7zvnVChYhMJQjxWrOiNMLAm/AZ4180k+waNiWLId3Id89YOfqXbDcrrsXuIvhdvEGPFsrJT5boxMFdRS1KSjsEjdD731fWpAMPpxUtPNtbgLsCNOwJpEcjTGrecIKQ5O8cg0S/EkhRa02XvYdOVvKz9gOXsgyvijlW+9NJ+ZKxqnzSLijgnsORAYtTMtGtn+ol/AH7H8x/lAYxDpQ8aqKTcJbpv7KJgk7dP15UoTrPfbxwvgdhGIav3Y8xKlKeRBftebKSO831HT91/zJigPL1Ja0CPOGBTm9w9KTzPzn/ZNmNThBYRRMd3S2Ea5 havienduong@Has-MacBook-Air.local
 
 ```
 ssh-rsa ThisIsasAMpleKey
