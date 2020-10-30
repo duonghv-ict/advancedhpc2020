@@ -13,7 +13,7 @@ Student Info
 =======================
 
 * Name: Ha Vien Duong
-* Key:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhXgqejdm5FlA2takvfVIOJk1q7zvnVChYhMJQjxWrOiNMLAm/AZ4180k+waNiWLId3Id89YOfqXbDcrrsXuIvhdvEGPFsrJT5boxMFdRS1KSjsEjdD731fWpAMPpxUtPNtbgLsCNOwJpEcjTGrecIKQ5O8cg0S/EkhRa02XvYdOVvKz9gOXsgyvijlW+9NJ+ZKxqnzSLijgnsORAYtTMtGtn+ol/AH7H8x/lAYxDpQ8aqKTcJbpv7KJgk7dP15UoTrPfbxwvgdhGIav3Y8xKlKeRBftebKSO831HT91/zJigPL1Ja0CPOGBTm9w9KTzPzn/ZNmNThBYRRMd3S2Ea5 havienduong@Has-MacBook-Air.local
+* Key:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC93CvcbqTDirMsxW90s03YRUum4dp1K1J27i3iDNErMj6RGugeEaFap5B15ieOYLZwti7CvWufSFmIaoJxAyU8FEyr3SHMJdAO/5H32MGQcBfbGb6ul98HQXElmJAs2nKW//6piU4D+IyTIwbeFQDfrTReQ7P12Gvr+fHfAS5WCBhkXtF+t6f6oyVuvg9uTKsnZkRcb5iyLsYiOttERsOhRI2+lGM3cQgobnhkNJUaEdED0+UHIxhrQXtgwg/al0KlBD88a5eoAgtpkl5ELFutluNBspKQCv/uf9fYpb9Y2Yj6qT/bRRknBMCAUp0o6ZzDWVTrAWAEF6WD3Wt0+5G1 havienduong@Has-MacBook-Air.local
 
 ```
 ssh-rsa ThisIsasAMpleKey
