@@ -1,0 +1,77 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Report.1.OpenMP.tex}
+\author{havienduong }
+\date{November 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{How you implement the conversion}
+We need to change the source code from function labwork1\_OpenMP() as below:
+\begin{verbatim}
+    // do something here
+    omp_set_num_threads(ACTIVE_THREADS);
+
+    #pragma omp parallel for
+    for (int j = 0; j < 100; j++) {     // let's do it 100 times, otherwise it's too fast!
+        for (int i = 0; i < pixelCount; i++) {
+            outputImage[i * 3] = (char) (((int) inputImage->buffer[i * 3] + (int) inputImage->buffer[i * 3 + 1] +
+                                          (int) inputImage->buffer[i * 3 + 2]) / 3);
+            outputImage[i * 3 + 1] = outputImage[i * 3];
+            outputImage[i * 3 + 2] = outputImage[i * 3];
+        }
+    }
+\end{verbatim}
+
+So here we need change a bit than using CPU normally:
+\begin{itemize}
+    \item change number Thread using omp\_set\_num\_threads(ACTIVE\_THREADS)
+    \item \#pragma omp parallel for
+\end{itemize}
+
+\section{What’s the speedup?}
+When using OpenMP, we can get faster result, as below detail (test with command ./labwork 1 ../data/eiffel.jpg)
+\begin{verbatim}
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 1
+    labwork 1 CPU ellapsed 4058.0ms
+    labwork 1 CPU omp ellapsed 381.6ms
+    labwork 1 ellapsed 570.4ms
+\end{verbatim}
+
+\section{Try experimenting with different OpenMP parameters}
+With the ACTIVE\_THREADS=64 we have the following result (test with command ./labwork 1 ../data/eiffel.jpg):
+\begin{verbatim}
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 1
+    labwork 1 CPU ellapsed 4058.0ms
+    labwork 1 CPU omp ellapsed 381.6ms
+    labwork 1 ellapsed 570.4ms
+\end{verbatim}
+
+And with the ACTIVE\_THREADS=4 we have the following result (test with command ./labwork 1 ../data/eiffel.jpg):
+\begin{verbatim}
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 1
+    labwork 1 CPU ellapsed 4099.2ms
+    labwork 1 CPU omp ellapsed 1360.9ms
+    labwork 1 ellapsed 1474.6ms
+\end{verbatim}
+
+And with the ACTIVE\_THREADS=16 we have the following result (test with command ./labwork 1 ../data/eiffel.jpg):
+\begin{verbatim}
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 1
+    labwork 1 CPU ellapsed 4509.6ms
+    labwork 1 CPU omp ellapsed 554.6ms
+    labwork 1 ellapsed 755.3ms
+\end{verbatim}
+
+\end{document}
