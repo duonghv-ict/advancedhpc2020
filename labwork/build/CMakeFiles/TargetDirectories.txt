@@ -1,0 +1,3 @@
+/storage/student5/advancedhpc2020/labwork/build/CMakeFiles/rebuild_cache.dir
+/storage/student5/advancedhpc2020/labwork/build/CMakeFiles/labwork.dir
+/storage/student5/advancedhpc2020/labwork/build/CMakeFiles/edit_cache.dir

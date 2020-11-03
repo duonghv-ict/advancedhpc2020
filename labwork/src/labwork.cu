@@ -3,7 +3,7 @@
 #include <cuda_runtime_api.h>
 #include <omp.h>
 
-#define ACTIVE_THREADS 4
+#define ACTIVE_THREADS 16
 
 int main(int argc, char **argv) {
     printf("USTH ICT Master 2018, Advanced Programming for HPC.\n");
@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
             printf("labwork 1 CPU ellapsed %.1fms\n", lwNum, timer.getElapsedTimeInMilliSec());
             timer.start();
             labwork.labwork1_OpenMP();
+            printf("labwork 1 CPU omp ellapsed %.1fms\n", lwNum, timer.getElapsedTimeInMilliSec());
             labwork.saveOutputImage("labwork2-openmp-out.jpg");
             break;
         case 2:
@@ -54,7 +55,7 @@ int main(int argc, char **argv) {
         case 5:
             labwork.labwork5_CPU();
             labwork.saveOutputImage("labwork5-cpu-out.jpg");
-            labwork.labwork5_GPU();
+            labwork.labwork5_GPU(FALSE);
             labwork.saveOutputImage("labwork5-gpu-out.jpg");
             break;
         case 6:
@@ -110,6 +111,17 @@ void Labwork::labwork1_OpenMP() {
     int pixelCount = inputImage->width * inputImage->height;
     outputImage = static_cast<char *>(malloc(pixelCount * 3));
     // do something here
+    omp_set_num_threads(ACTIVE_THREADS);
+
+    #pragma omp parallel for
+    for (int j = 0; j < 100; j++) {     // let's do it 100 times, otherwise it's too fast!
+        for (int i = 0; i < pixelCount; i++) {
+            outputImage[i * 3] = (char) (((int) inputImage->buffer[i * 3] + (int) inputImage->buffer[i * 3 + 1] +
+                                          (int) inputImage->buffer[i * 3 + 2]) / 3);
+            outputImage[i * 3 + 1] = outputImage[i * 3];
+            outputImage[i * 3 + 2] = outputImage[i * 3];
+        }
+    }
 }
 
 int getSPcores(cudaDeviceProp devProp) {
@@ -148,25 +160,63 @@ void Labwork::labwork2_GPU() {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, i);
         // something more here
+	printf("Device name is %s\n",prop.name);
+	printf("Clock rate is %d\n",prop.clockRate);
+	printf("Core count is %d\n",getSPcores(prop));
+	printf("Multiprocessor count is %d\n",prop.multiProcessorCount);
+	printf("warpSize is %d\n",prop.warpSize);
+	printf("Memory info - clock rate is %d\n",prop.memoryClockRate);
+	printf("Memory info - bus width is %d\n",prop.memoryBusWidth);
     }
 
 }
 
+__global__ void grayscale(uchar3 *input, uchar3 *output) {
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    output[tid].x = (input[tid].x + input[tid].y +
+    input[tid].z) / 3;
+    output[tid].z = output[tid].y = output[tid].x;
+}
+
 void Labwork::labwork3_GPU() {
     // Calculate number of pixels
+    int pixelCount = inputImage->width * inputImage->height;
+    outputImage = static_cast<char *>(malloc(pixelCount * 3));
 
-    // Allocate CUDA memory    
+    // Allocate CUDA memory
+    uchar3 *devInput;
+    uchar3 *devGray;
+
+    cudaMalloc(&devInput, pixelCount * sizeof(uchar3));
+    cudaMalloc(&devGray, pixelCount * sizeof(uchar3));    
 
     // Copy CUDA Memory from CPU to GPU
+    char *hostInput = (char *) malloc(pixelCount * 3);
+    for (int i = 0; i < pixelCount; i++) {
+            hostInput[i * 3] = (char) (int) inputImage->buffer[i * 3];;
+            hostInput[i * 3 + 1] = (char) (int) inputImage->buffer[i * 3 + 1];
+            hostInput[i * 3 + 2] = (char)  (int) inputImage->buffer[i * 3 + 2];
+        }
+
+    cudaMemcpy(devInput, hostInput, pixelCount * sizeof(uchar3), cudaMemcpyHostToDevice);
 
     // Processing
+    int blockSize = 8;
+    int numBlock = pixelCount / blockSize;
+    grayscale<<<numBlock, blockSize>>>(devInput, devGray);
 
     // Copy CUDA Memory from GPU to CPU
+    cudaMemcpy(outputImage, devGray, pixelCount * sizeof(uchar3), cudaMemcpyDeviceToHost);
 
     // Cleaning
+    cudaFree(devInput);
+    cudaFree(devGray);
 }
 
 void Labwork::labwork4_GPU() {
+}
+
+void Labwork::labwork5_CPU() {
 }
 
 void Labwork::labwork5_GPU(bool shared) {
