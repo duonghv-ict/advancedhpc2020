@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Report.3.cuda.tex}
+\author{havienduong }
+\date{November 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Explain how you implement the labwork}
+This labwork is implemented step by step as below:
+\begin{verbatim}
+    void Labwork::labwork3_GPU() {
+    // Calculate number of pixels
+    int pixelCount = inputImage->width * inputImage->height;
+    outputImage = static_cast<char *>(malloc(pixelCount * 3));
+
+    // Allocate CUDA memory
+    uchar3 *devInput;
+    uchar3 *devGray;
+
+    cudaMalloc(&devInput, pixelCount * sizeof(uchar3));
+    cudaMalloc(&devGray, pixelCount * sizeof(uchar3));    
+
+    // Copy CUDA Memory from CPU to GPU
+    char *hostInput = (char *) malloc(pixelCount * 3);
+    omp_set_num_threads(ACTIVE_THREADS);
+
+    #pragma omp parallel for
+    for (int j = 0; j < 100; j++) {     // let's do it 100 times, otherwise it's too fast!
+        for (int i = 0; i < pixelCount; i++) {
+            hostInput[i * 3] = (char) (((int) inputImage->buffer[i * 3] + (int) inputImage->buffer[i * 3 + 1] +
+                                          (int) inputImage->buffer[i * 3 + 2]) / 3);
+            hostInput[i * 3 + 1] = hostInput[i * 3];
+            hostInput[i * 3 + 2] = hostInput[i * 3];
+        }
+    }
+
+    cudaMemcpy(devInput, hostInput, pixelCount * sizeof(uchar3), cudaMemcpyHostToDevice);
+
+    // Processing
+    int blockSize = 64;
+    int numBlock = pixelCount / blockSize;
+    grayscale<<<numBlock, blockSize>>>(devInput, devGray);
+
+    // Copy CUDA Memory from GPU to CPU
+    cudaMemcpy(outputImage, devGray, pixelCount * sizeof(uchar3), cudaMemcpyDeviceToHost);
+
+    // Cleaning
+    cudaFree(devInput);
+    cudaFree(devGray);
+}
+\end{verbatim}
+
+\section{What’s the speedup?}
+When block size is increased, the ellapsed time is faster
+
+\section{Try experimenting with different block size values}
+With the block size is 64, we have ellapsed time is 16.3ms:
+\begin{verbatim}
+    student5@ictserver2:/storage/student5/advancedhpc2020/labwork/build$ ./labwork 3 ../data/cloud.jpeg 
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 3
+    labwork 3 ellapsed 16.3ms
+\end{verbatim}
+
+\noindent With the block size is 32, we have ellapsed time is 13.0ms:
+\begin{verbatim}
+    student5@ictserver2:/storage/student5/advancedhpc2020/labwork/build$ ./labwork 3 ../data/cloud.jpeg 
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 3
+    labwork 3 ellapsed 13.0ms
+\end{verbatim}
+
+\noindent With the block size is 16, we have ellapsed time is 119.3ms:
+\begin{verbatim}
+    student5@ictserver2:/storage/student5/advancedhpc2020/labwork/build$ ./labwork 3 ../data/cloud.jpeg 
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 3
+    labwork 3 ellapsed 119.3ms
+\end{verbatim}
+
+\noindent With the block size is 8, we have ellapsed time is 116.7ms:
+\begin{verbatim}
+    student5@ictserver2:/storage/student5/advancedhpc2020/labwork/build$ ./labwork 3 ../data/cloud.jpeg 
+    USTH ICT Master 2018, Advanced Programming for HPC.
+    Warming up...
+    Starting labwork 3
+    labwork 3 ellapsed 116.7ms
+\end{verbatim}
+
+\section{Plot a graph of block size vs speedup}
+With data set
+
+\end{document}
