@@ -45,7 +45,13 @@ int main(int argc, char **argv) {
             labwork.labwork2_GPU();
             break;
         case 3:
-            labwork.labwork3_GPU();
+            for (int i = 1; i <= 64; ++i)
+            {
+                timer.start();
+                labwork.labwork3_GPU(i);
+                printf("labwork 3 GPU with blockSize=%d ellapsed %.1fms\n", i, lwNum, timer.getElapsedTimeInMilliSec());
+            }
+            
             labwork.saveOutputImage("labwork3-gpu-out.jpg");
             break;
         case 4:
@@ -178,7 +184,7 @@ __global__ void grayscale(uchar3 *input, uchar3 *output) {
     output[tid].z = output[tid].y = output[tid].x;
 }
 
-void Labwork::labwork3_GPU() {
+void Labwork::labwork3_GPU(int blockSize) {
     // Calculate number of pixels
     int pixelCount = inputImage->width * inputImage->height;
     outputImage = static_cast<char *>(malloc(pixelCount * 3));
@@ -192,16 +198,18 @@ void Labwork::labwork3_GPU() {
 
     // Copy CUDA Memory from CPU to GPU
     char *hostInput = (char *) malloc(pixelCount * 3);
-    for (int i = 0; i < pixelCount; i++) {
-            hostInput[i * 3] = (char) (int) inputImage->buffer[i * 3];;
-            hostInput[i * 3 + 1] = (char) (int) inputImage->buffer[i * 3 + 1];
-            hostInput[i * 3 + 2] = (char)  (int) inputImage->buffer[i * 3 + 2];
-        }
+    // for (int i = 0; i < pixelCount; i++) {
+    //         hostInput[i * 3] = (char) (int) inputImage->buffer[i * 3];;
+    //         hostInput[i * 3 + 1] = (char) (int) inputImage->buffer[i * 3 + 1];
+    //         hostInput[i * 3 + 2] = (char)  (int) inputImage->buffer[i * 3 + 2];
+    //     }
+
+    hostInput = (char*) inputImage->buffer;
 
     cudaMemcpy(devInput, hostInput, pixelCount * sizeof(uchar3), cudaMemcpyHostToDevice);
 
     // Processing
-    int blockSize = 8;
+    // int blockSize = 8;
     int numBlock = pixelCount / blockSize;
     grayscale<<<numBlock, blockSize>>>(devInput, devGray);
 
@@ -214,6 +222,7 @@ void Labwork::labwork3_GPU() {
 }
 
 void Labwork::labwork4_GPU() {
+    
 }
 
 void Labwork::labwork5_CPU() {
