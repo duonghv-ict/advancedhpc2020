@@ -26,7 +26,9 @@ public:
     void labwork5_CPU();
     void labwork5_GPU(bool shared);
 
-    void labwork6_GPU();
+    void labwork6_GPU_binarization(int threshold);
+    void labwork6_GPU_brighness(int threshold);
+    void labwork6_GPU_blending(float weight);
 
     void labwork7_GPU();
 
